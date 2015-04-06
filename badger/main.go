@@ -22,8 +22,7 @@ type Badger struct {
 	buffer      [16]byte
 }
 
-// Hashes a blob of data. Beware: Cannot be used more than once, as it pollutes internal state.
-// key and iv should be 16 bytes each.
+// Hashes a blob of data. Key and iv should be 16 bytes each.
 func Hash(data, key, iv []byte) ([]byte, error) {
 	b := Badger{}
 	err := b.keySetup(key)
