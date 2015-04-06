@@ -23,14 +23,23 @@ type badger struct {
 }
 
 // Hashes a blob of data. Key and iv should be 16 bytes each.
-func Hash(data, key, iv []byte) ([]byte, error) {
+// Returns 4 * Trees bytes as hash.
+func Hash(data, key, iv []byte) (hash []byte, err error) {
 	b := badger{}
-	err := b.keySetup(key)
+
+	err = b.keySetup(key)
 	if err != nil {
 		return nil, err
 	}
+
 	b.process(data)
-	return b.finalize(iv)
+
+	hash, err = b.finalize(iv)
+	if err != nil {
+		return nil, err
+	}
+
+	return hash, nil
 }
 
 // Sets up the level key and final key. The key parameter should be 16 bytes.
@@ -223,7 +232,7 @@ func (b *badger) finalize(iv []byte) ([]byte, error) {
 	dest := make([]byte, Trees*4)
 	r, err := rabbit.NewCipher(b.finalPrng, iv)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Unable to initialize final Rabbit instance: %s", err))
+		return nil, errors.New(fmt.Sprintf("Unable to initialize second Rabbit instance: %s", err))
 	}
 
 	r.XORKeyStream(dest, mac)
