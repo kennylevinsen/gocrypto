@@ -16,7 +16,7 @@ func TestKeySetup(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		b := Badger{}
+		b := badger{}
 		err := b.keySetup(test.Key)
 		if err != nil {
 			t.Fatal(fmt.Sprintf("Test %d: keySetup failed: %s", i+1, err))
@@ -37,7 +37,7 @@ func TestProcess(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		b := Badger{}
+		b := badger{}
 		err := b.keySetup(test.Key)
 		if err != nil {
 			t.Fatal(fmt.Sprintf("Test %d: keySetup failed: %s", i+1, err))

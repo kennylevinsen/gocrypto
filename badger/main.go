@@ -12,7 +12,7 @@ const (
 	Levels = 28
 )
 
-type Badger struct {
+type badger struct {
 	bitCount    uint64
 	bufferIndex uint64
 	finalPrng   []byte
@@ -24,7 +24,7 @@ type Badger struct {
 
 // Hashes a blob of data. Key and iv should be 16 bytes each.
 func Hash(data, key, iv []byte) ([]byte, error) {
-	b := Badger{}
+	b := badger{}
 	err := b.keySetup(key)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func Hash(data, key, iv []byte) ([]byte, error) {
 }
 
 // Sets up the level key and final key. The key parameter should be 16 bytes.
-func (b *Badger) keySetup(key []byte) error {
+func (b *badger) keySetup(key []byte) error {
 	spareFinalKeyIndex := 4
 	spareFinalKey := []byte{}
 	b.finalPrng = key
@@ -91,7 +91,7 @@ func (b *Badger) keySetup(key []byte) error {
 }
 
 // Hashes nodes to the tree buffer
-func (b *Badger) process(src []byte) {
+func (b *badger) process(src []byte) {
 	length := len(src)
 	srcOffset := 0
 
@@ -102,7 +102,7 @@ func (b *Badger) process(src []byte) {
 
 		// We do this once per tree
 		for i := 0; i < Trees; i++ {
-			b.hashNode(b.levelKey, &b.treeBuffer, b.bitCount>>7, localData0, localData1, i, 0)
+			hashNode(b.levelKey, &b.treeBuffer, b.bitCount>>7, localData0, localData1, i, 0)
 		}
 		b.bitCount += 0x80
 		srcOffset += 16
@@ -119,7 +119,7 @@ func (b *Badger) process(src []byte) {
 }
 
 // Finalizes the tree buffer. The iv parameter should be 16 bytes.
-func (b *Badger) finalize(iv []byte) ([]byte, error) {
+func (b *badger) finalize(iv []byte) ([]byte, error) {
 	right := make([]uint64, Trees)
 	bufferMask := b.bitCount >> 7
 	counter := 0
@@ -231,7 +231,7 @@ func (b *Badger) finalize(iv []byte) ([]byte, error) {
 }
 
 // Hashes the two uint64's, left and right, to the hash tree.
-func (b *Badger) hashNode(key [28][4]uint64, buffer *[28][4]uint64, bufferMask, left, right uint64, counter int, level uint64) {
+func hashNode(key [28][4]uint64, buffer *[28][4]uint64, bufferMask, left, right uint64, counter int, level uint64) {
 	for {
 		t0 := key[level][counter]
 		t1 := uint32(t0) + uint32(left)
