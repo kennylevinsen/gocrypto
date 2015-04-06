@@ -4,9 +4,11 @@
 
 // This package implements the Badger message authentication code (MAC).
 //
-// Specification:  http://cryptico.com/images/pages/WP_Badger_Specification.pdf
-// Review:         http://cryptico.com/images/pages/Badger_Security_Report.pdf
-// Reference:      http://cryptico.com/images/pages/Badger_Reference_Code.zip
+// Specification: http://cryptico.com/images/pages/WP_Badger_Specification.pdf
+//
+// Review: http://cryptico.com/images/pages/Badger_Security_Report.pdf
+//
+// Reference: http://cryptico.com/images/pages/Badger_Reference_Code.zip
 //
 package badger
 
