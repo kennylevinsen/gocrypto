@@ -1,3 +1,7 @@
+// Copyright 2015 Kenny Levinsen. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package testdata
 
 var datn = [48]byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
