@@ -206,7 +206,7 @@ func (b *badger) finalize(iv []byte) ([]byte, error) {
 					t2 := uint32(b.levelKey[level+1][counter]>>32) + uint32(b.treeBuffer[level][counter]>>32)
 					right[i] += uint64(t1) * uint64(t2)
 					counter++
-					if counter > Trees {
+					if counter >= Trees {
 						counter -= Trees
 						level++
 					}
