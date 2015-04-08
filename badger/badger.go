@@ -34,7 +34,7 @@ type badger struct {
 	buffer      [16]byte
 }
 
-// Hashes a blob of data. Key and iv should be 16 bytes each.
+// Hashes a blob of data. Key should be 16 bytes, IV should be 8 bytes.
 // Returns 4 * Trees bytes as hash.
 func Hash(data, key, iv []byte) (hash []byte, err error) {
 	b := badger{}
@@ -139,7 +139,7 @@ func (b *badger) process(src []byte) {
 	}
 }
 
-// Finalizes the tree buffer. The iv parameter should be 16 bytes.
+// Finalizes the tree buffer. The iv parameter should be 8 bytes.
 func (b *badger) finalize(iv []byte) ([]byte, error) {
 	right := make([]uint64, Trees)
 	bufferMask := b.bitCount >> 7
