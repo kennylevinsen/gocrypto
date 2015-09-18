@@ -1,5 +1,5 @@
 // Copyright 2015 Kenny Levinsen. All rights reserved.
-// Use of this source code is governed by a BSD-style
+// Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
 // This package implements the Badger message authentication code (MAC).
@@ -57,7 +57,7 @@ func Hash(data, key, iv []byte) (hash []byte, err error) {
 // Sets up the level key and final key. The key parameter should be 16 bytes.
 func (b *badger) keySetup(key []byte) error {
 	spareFinalKeyIndex := 4
-	spareFinalKey := []byte{}
+	spareFinalKey := [16]byte{}
 	b.finalPrng = key
 
 	rabbit, err := rabbit.NewCipher(key, []byte{})
@@ -67,9 +67,8 @@ func (b *badger) keySetup(key []byte) error {
 	}
 
 	// We want to extract raw PRNG data, so we're making an empty input
-	emptySlice := make([]byte, Trees*6*4)
 	finalKeyData := make([]byte, Trees*6*4)
-	rabbit.XORKeyStream(finalKeyData, emptySlice)
+	rabbit.XORKeyStream(finalKeyData, finalKeyData)
 
 	// Verify final keys
 	for i := 0; i < 6; i++ {
@@ -81,8 +80,7 @@ func (b *badger) keySetup(key []byte) error {
 			for d >= 0xFFFFFFFB {
 				if spareFinalKeyIndex == 4 {
 					// Fetch some more key material
-					emptySlice = make([]byte, 16)
-					rabbit.XORKeyStream(spareFinalKey, emptySlice)
+					rabbit.XORKeyStream(spareFinalKey[:], spareFinalKey[:])
 					spareFinalKeyIndex = 0
 				}
 
@@ -96,9 +94,8 @@ func (b *badger) keySetup(key []byte) error {
 	}
 
 	// Another case of wanting PRNG
-	emptySlice = make([]byte, 8*Levels*Trees)
 	levelKeyData := make([]byte, 8*Levels*Trees)
-	rabbit.XORKeyStream(levelKeyData, emptySlice)
+	rabbit.XORKeyStream(levelKeyData, levelKeyData)
 
 	// Assign level keys
 	for i := 0; i < Levels; i++ {
@@ -141,7 +138,7 @@ func (b *badger) process(src []byte) {
 
 // Finalizes the tree buffer. The iv parameter should be 8 bytes.
 func (b *badger) finalize(iv []byte) ([]byte, error) {
-	right := make([]uint64, Trees)
+	right := [Trees]uint64{}
 	bufferMask := b.bitCount >> 7
 	counter := 0
 	level := 0
@@ -241,14 +238,13 @@ func (b *badger) finalize(iv []byte) ([]byte, error) {
 	}
 
 	// And encrypt the result
-	dest := make([]byte, Trees*4)
 	r, err := rabbit.NewCipher(b.finalPrng, iv)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Unable to initialize second Rabbit instance: %s", err))
 	}
 
-	r.XORKeyStream(dest, mac)
-	return dest, nil
+	r.XORKeyStream(mac, mac)
+	return mac, nil
 }
 
 // Hashes the two uint64's, left and right, to the hash tree.
@@ -267,5 +263,4 @@ func hashNode(key [28][4]uint64, buffer *[28][4]uint64, bufferMask, left, right 
 		bufferMask = bufferMask >> 1
 	}
 	buffer[level][counter] = right
-
 }
