@@ -7,7 +7,7 @@ package badger
 import (
 	"bytes"
 	"fmt"
-	"github.com/joushou/gocrypto/badger/testdata"
+	"github.com/kennylevinsen/gocrypto/badger/testdata"
 	"testing"
 )
 
